@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('Query Tester')"></head>
+<body>
+    <div th:replace="layout :: navbar"></div>
+    <div class="container px-4">
+        <h1 class="mb-4 h2">Query Tester (Limited to 100 rows)</h1>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">SQL Query</label>
+                    <textarea id="query" class="form-control" rows="5" placeholder="SELECT * FROM report_config"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">JSON Parameters</label>
+                    <textarea id="params" class="form-control" rows="2">{}</textarea>
+                </div>
+                <button id="runBtn" class="btn btn-primary"><i class="bi bi-play-fill"></i> Run Query</button>
+            </div>
+        </div>
+
+        <div class="card" id="resultCard" style="display: none;">
+            <div class="card-header bg-dark text-white">Results</div>
+            <div class="card-body overflow-auto">
+                <table class="table table-bordered table-sm" id="resultTable">
+                    <thead id="resultHead"></thead>
+                    <tbody id="resultBody"></tbody>
+                </table>
+                <div id="errorMsg" class="text-danger"></div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="layout :: scripts"></div>
+    <script>
+        document.getElementById('runBtn').addEventListener('click', async () => {
+            const query = document.getElementById('query').value;
+            const params = document.getElementById('params').value;
+            
+            document.getElementById('resultCard').style.display = 'block';
+            
+            if ($.fn.DataTable.isDataTable('#resultTable')) {
+                $('#resultTable').DataTable().destroy();
+            }
+            document.getElementById('resultHead').innerHTML = '';
+            document.getElementById('resultBody').innerHTML = '';
+            document.getElementById('errorMsg').innerText = 'Loading...';
+
+            try {
+                const response = await fetch('/api/test-query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query, parameters: params })
+                });
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Execution failed');
+                }
+                
+                document.getElementById('errorMsg').innerText = '';
+                
+                if (data.length > 0) {
+                    const keys = Object.keys(data[0]);
+                    let headHtml = '<tr>' + keys.map(k => `<th>${k}</th>`).join('') + '</tr>';
+                    document.getElementById('resultHead').innerHTML = headHtml;
+                    
+                    let bodyHtml = data.map(row => {
+                        return '<tr>' + keys.map(k => `<td>${row[k] !== null ? row[k] : ''}</td>`).join('') + '</tr>';
+                    }).join('');
+                    document.getElementById('resultBody').innerHTML = bodyHtml;
+
+                    // Initialize DataTables after DOM is populated
+                    $('#resultTable').DataTable({
+                        "pageLength": 10,
+                        "destroy": true,
+                        "language": {
+                            "search": "_INPUT_",
+                            "searchPlaceholder": "Search results..."
+                        }
+                    });
+                } else {
+                    document.getElementById('errorMsg').innerText = 'No results returned.';
+                }
+            } catch (err) {
+                document.getElementById('errorMsg').innerText = err.message;
+            }
+        });
+    </script>
+</body>
+</html>

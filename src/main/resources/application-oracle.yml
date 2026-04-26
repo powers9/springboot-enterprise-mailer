@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521:xe
+    driverClassName: oracle.jdbc.OracleDriver
+    username: mailer_user
+    password: mailer_password
+  mail:
+    host: smtp.yourcompany.com
+    port: 587
+    username: your_email
+    password: your_password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

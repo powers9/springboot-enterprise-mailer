@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('Config Form')"></head>
+<body>
+    <div th:replace="layout :: navbar"></div>
+    <div class="container">
+        <h1 class="mb-4 h2" th:text="${config.id != null ? 'Edit Configuration' : 'New Configuration'}">New Config</h1>
+        
+        <div class="card">
+            <div class="card-body">
+                <form action="/api/configs" method="post">
+                    <input type="hidden" name="id" th:value="${config.id}" />
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Report Name</label>
+                            <input type="text" class="form-control" name="reportName" th:value="${config.reportName}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Cron Expression</label>
+                            <input type="text" class="form-control" name="cronExpression" th:value="${config.cronExpression}" placeholder="0 0/5 * * * ?" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Recipients (comma separated)</label>
+                            <input type="text" class="form-control" name="recipients" th:value="${config.recipients}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Formats (comma separated: CSV,XLSX,PDF)</label>
+                            <input type="text" class="form-control" name="formats" th:value="${config.formats}" placeholder="CSV,XLSX" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-control" name="subject" th:value="${config.subject}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email Body Template (Thymeleaf template name)</label>
+                        <input type="text" class="form-control" name="emailBodyTemplate" th:value="${config.emailBodyTemplate != null ? config.emailBodyTemplate : 'default-email'}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">SQL Query (Only SELECT allowed)</label>
+                        <textarea class="form-control" name="querySql" th:text="${config.querySql}" rows="5" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">JSON Parameters (for Named parameters in SQL)</label>
+                        <textarea class="form-control" name="parameters" th:text="${config.parameters != null ? config.parameters : '{}'}" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" name="active" th:checked="${config.active == null ? true : config.active}">
+                        <label class="form-check-label">Active</label>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Save Configuration</button>
+                        <a href="/configs" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div th:replace="layout :: scripts"></div>
+</body>
+</html>

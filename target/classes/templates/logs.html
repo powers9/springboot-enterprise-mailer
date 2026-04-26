@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('Execution Logs')"></head>
+<body>
+    <div th:replace="layout :: navbar"></div>
+    <div class="container-fluid px-4">
+        <h1 class="mb-4 h2">Execution Logs</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <table id="logsTable" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Log ID</th>
+                            <th>Config ID</th>
+                            <th>Triggered Time</th>
+                            <th>Status</th>
+                            <th>Duration (ms)</th>
+                            <th>Formats</th>
+                            <th>Sent To</th>
+                            <th>Error Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="log : ${logs}">
+                            <td th:text="${log.id}">1</td>
+                            <td th:text="${log.configId}">1</td>
+                            <td th:text="${#temporals.format(log.triggeredTime, 'yyyy-MM-dd HH:mm:ss')}">Time</td>
+                            <td>
+                                <span th:if="${log.status == 'SUCCESS'}" class="badge bg-success">SUCCESS</span>
+                                <span th:if="${log.status == 'FAILED'}" class="badge bg-danger">FAILED</span>
+                            </td>
+                            <td th:text="${log.executionDurationMs}">100</td>
+                            <td th:text="${log.generatedFormats}">CSV</td>
+                            <td th:text="${log.sentTo}">email@test.com</td>
+                            <td class="text-danger" style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" th:title="${log.errorMessage}" th:text="${log.errorMessage}">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div th:replace="layout :: scripts"></div>
+    <script>
+        $(document).ready(function() {
+            $('#logsTable').DataTable({
+                "pageLength": 10,
+                "order": [ [ 2, "desc" ] ], // Sort by Triggered Time descending
+                "language": {
+                    "search": "_INPUT_",
+                    "searchPlaceholder": "Search logs..."
+                }
+            });
+        });
+    </script>
+</body>
+</html>
