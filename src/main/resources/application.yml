@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: h2
+  sql:
+    init:
+      mode: always
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
+app:
+  security:
+    username: admin
+    password: password
+  mailer:
+    max-attachment-size-mb: 20

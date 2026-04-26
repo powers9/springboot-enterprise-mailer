@@ -1,0 +1,106 @@
+:root {
+    --primary: #4F46E5;
+    --primary-hover: #4338CA;
+    --bg-main: #F3F4F6;
+    --bg-card: #FFFFFF;
+    --text-main: #111827;
+    --text-muted: #4B5563;
+    --border-color: #E5E7EB;
+    --success: #10B981;
+    --danger: #EF4444;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+}
+
+.navbar {
+    background-color: var(--primary) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand, .nav-link {
+    color: #FFFFFF !important;
+}
+
+.nav-link:hover {
+    color: #E0E7FF !important;
+}
+
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.table {
+    color: var(--text-main);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    color: var(--text-main);
+    background-color: #F9FAFB;
+}
+
+.table-hover > tbody > tr:hover > * {
+    color: var(--text-main);
+    background-color: #F3F4F6;
+}
+
+.table th {
+    border-bottom-color: var(--border-color);
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.table td {
+    border-bottom-color: var(--border-color);
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.form-control, .form-select {
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    color: var(--text-main);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #FFFFFF;
+    color: var(--text-main);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.25);
+}
+
+.form-label, .form-check-label {
+    color: var(--text-main);
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.stat-card {
+    transition: transform 0.2s;
+    border: none;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
