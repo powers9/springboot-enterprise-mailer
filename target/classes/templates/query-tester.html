@@ -32,12 +32,17 @@
         </div>
     </div>
 
+    <div th:replace="layout :: scripts"></div>
     <script>
         document.getElementById('runBtn').addEventListener('click', async () => {
             const query = document.getElementById('query').value;
             const params = document.getElementById('params').value;
             
             document.getElementById('resultCard').style.display = 'block';
+            
+            if ($.fn.DataTable.isDataTable('#resultTable')) {
+                $('#resultTable').DataTable().destroy();
+            }
             document.getElementById('resultHead').innerHTML = '';
             document.getElementById('resultBody').innerHTML = '';
             document.getElementById('errorMsg').innerText = 'Loading...';
@@ -65,6 +70,16 @@
                         return '<tr>' + keys.map(k => `<td>${row[k] !== null ? row[k] : ''}</td>`).join('') + '</tr>';
                     }).join('');
                     document.getElementById('resultBody').innerHTML = bodyHtml;
+
+                    // Initialize DataTables after DOM is populated
+                    $('#resultTable').DataTable({
+                        "pageLength": 10,
+                        "destroy": true,
+                        "language": {
+                            "search": "_INPUT_",
+                            "searchPlaceholder": "Search results..."
+                        }
+                    });
                 } else {
                     document.getElementById('errorMsg').innerText = 'No results returned.';
                 }
