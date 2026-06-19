@@ -13,10 +13,13 @@ public class DashboardController {
 
     private final ReportConfigService configService;
     private final ReportLogService logService;
+    private final com.enterprise.mailer.service.MultiDatabaseService multiDatabaseService;
 
-    public DashboardController(ReportConfigService configService, ReportLogService logService) {
+    public DashboardController(ReportConfigService configService, ReportLogService logService,
+                               com.enterprise.mailer.service.MultiDatabaseService multiDatabaseService) {
         this.configService = configService;
         this.logService = logService;
+        this.multiDatabaseService = multiDatabaseService;
     }
 
     @GetMapping("/")
@@ -36,12 +39,14 @@ public class DashboardController {
     @GetMapping("/configs/new")
     public String newConfigForm(Model model) {
         model.addAttribute("config", new ReportConfig());
+        model.addAttribute("availableDbs", multiDatabaseService.getAvailableDatabaseNames());
         return "config-form";
     }
 
     @GetMapping("/configs/edit/{id}")
     public String editConfigForm(@PathVariable Long id, Model model) {
         model.addAttribute("config", configService.getConfigById(id));
+        model.addAttribute("availableDbs", multiDatabaseService.getAvailableDatabaseNames());
         return "config-form";
     }
 
@@ -52,7 +57,8 @@ public class DashboardController {
     }
 
     @GetMapping("/query-tester")
-    public String queryTester() {
+    public String queryTester(Model model) {
+        model.addAttribute("availableDbs", multiDatabaseService.getAvailableDatabaseNames());
         return "query-tester";
     }
 }

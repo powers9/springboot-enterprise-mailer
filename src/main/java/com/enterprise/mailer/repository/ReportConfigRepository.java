@@ -38,6 +38,7 @@ public class ReportConfigRepository {
             .subject(rs.getString("subject"))
             .emailBodyTemplate(rs.getString("email_body_template"))
             .parameters(rs.getString("parameters"))
+            .databaseName(rs.getString("database_name"))
             .lastRunTime(rs.getObject("last_run_time", LocalDateTime.class))
             .lastStatus(rs.getString("last_status"))
             .createdAt(rs.getObject("created_at", LocalDateTime.class))
@@ -61,8 +62,8 @@ public class ReportConfigRepository {
 
     public ReportConfig save(ReportConfig config) {
         if (config.getId() == null) {
-            String sql = "INSERT INTO report_config (report_name, cron_expression, active, query_sql, formats, recipients, subject, email_body_template, parameters, created_at, updated_at) " +
-                    "VALUES (:reportName, :cronExpression, :active, :querySql, :formats, :recipients, :subject, :emailBodyTemplate, :parameters, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+            String sql = "INSERT INTO report_config (report_name, cron_expression, active, query_sql, formats, recipients, subject, email_body_template, parameters, database_name, created_at, updated_at) " +
+                    "VALUES (:reportName, :cronExpression, :active, :querySql, :formats, :recipients, :subject, :emailBodyTemplate, :parameters, :databaseName, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             SqlParameterSource paramSource = new BeanPropertySqlParameterSource(config);
             namedParameterJdbcTemplate.update(sql, paramSource, keyHolder, new String[]{"id"});
@@ -70,7 +71,7 @@ public class ReportConfigRepository {
         } else {
             String sql = "UPDATE report_config SET report_name = :reportName, cron_expression = :cronExpression, active = :active, " +
                     "query_sql = :querySql, formats = :formats, recipients = :recipients, subject = :subject, " +
-                    "email_body_template = :emailBodyTemplate, parameters = :parameters, updated_at = CURRENT_TIMESTAMP " +
+                    "email_body_template = :emailBodyTemplate, parameters = :parameters, database_name = :databaseName, updated_at = CURRENT_TIMESTAMP " +
                     "WHERE id = :id";
             SqlParameterSource paramSource = new BeanPropertySqlParameterSource(config);
             namedParameterJdbcTemplate.update(sql, paramSource);

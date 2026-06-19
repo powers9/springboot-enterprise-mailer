@@ -31,6 +31,7 @@ public class ReportExecutionService {
     private final ReportConfigRepository configRepository;
     private final ReportLogService logService;
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final MultiDatabaseService multiDatabaseService;
     private final JsonParamParser paramParser;
     private final CsvGenerator csvGenerator;
     private final ExcelGenerator excelGenerator;
@@ -42,13 +43,14 @@ public class ReportExecutionService {
     private long maxAttachmentSizeMb;
 
     public ReportExecutionService(ReportConfigRepository configRepository, ReportLogService logService,
-                                  NamedParameterJdbcTemplate jdbcTemplate, JsonParamParser paramParser,
-                                  CsvGenerator csvGenerator, ExcelGenerator excelGenerator,
+                                  NamedParameterJdbcTemplate jdbcTemplate, MultiDatabaseService multiDatabaseService,
+                                  JsonParamParser paramParser, CsvGenerator csvGenerator, ExcelGenerator excelGenerator,
                                   PdfGenerator pdfGenerator, EmailService emailService,
                                   FilenameGenerator filenameGenerator) {
         this.configRepository = configRepository;
         this.logService = logService;
         this.jdbcTemplate = jdbcTemplate;
+        this.multiDatabaseService = multiDatabaseService;
         this.paramParser = paramParser;
         this.csvGenerator = csvGenerator;
         this.excelGenerator = excelGenerator;
@@ -85,11 +87,20 @@ public class ReportExecutionService {
             File tempDir = new File(System.getProperty("java.io.tmpdir"), "mailer_" + java.util.UUID.randomUUID());
             tempDir.mkdirs();
 
+            String dbName = config.getDatabaseName();
+            if (dbName == null || dbName.trim().isEmpty()) {
+                dbName = "default";
+            }
+            NamedParameterJdbcTemplate targetTemplate = multiDatabaseService.getJdbcTemplate(dbName);
+            if (targetTemplate == null) {
+                throw new IllegalArgumentException("Database config '" + dbName + "' not found.");
+            }
+
             for (String format : formats) {
                 File outputFile = new File(tempDir, filenameGenerator.generateFilename(config.getReportName(), format.toLowerCase()));
-                log.info("Generating format {} for config id {}", format, configId);
+                log.info("Generating format {} for config id {} on database {}", format, configId, dbName);
                 
-                jdbcTemplate.query(config.getQuerySql(), params, rs -> {
+                targetTemplate.query(config.getQuerySql(), params, rs -> {
                     try {
                         if ("CSV".equals(format)) {
                             csvGenerator.generateCsv(rs, outputFile);

@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS report_config (
     subject VARCHAR(255),
     email_body_template VARCHAR(255),
     parameters TEXT,
+    database_name VARCHAR(255) DEFAULT 'default',
     last_run_time TIMESTAMP,
     last_status VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

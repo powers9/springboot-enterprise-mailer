@@ -15,3 +15,17 @@ spring:
           auth: false
           starttls:
             enable: false
+
+app:
+  databases:
+    sales_db:
+      url: jdbc:h2:mem:salesdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      username: sa
+      password:
+      driverClassName: org.h2.Driver
+    hr_db:
+      url: jdbc:h2:mem:hrdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      username: sa
+      password:
+      driverClassName: org.h2.Driver
+

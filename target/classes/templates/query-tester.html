@@ -9,6 +9,12 @@
         <div class="card mb-4">
             <div class="card-body">
                 <div class="mb-3">
+                    <label class="form-label">Database</label>
+                    <select id="database" class="form-select">
+                        <option th:each="dbName : ${availableDbs}" th:value="${dbName}" th:text="${dbName}">Database Name</option>
+                    </select>
+                </div>
+                <div class="mb-3">
                     <label class="form-label">SQL Query</label>
                     <textarea id="query" class="form-control" rows="5" placeholder="SELECT * FROM report_config"></textarea>
                 </div>
@@ -37,6 +43,7 @@
         document.getElementById('runBtn').addEventListener('click', async () => {
             const query = document.getElementById('query').value;
             const params = document.getElementById('params').value;
+            const database = document.getElementById('database').value;
             
             document.getElementById('resultCard').style.display = 'block';
             
@@ -51,7 +58,7 @@
                 const response = await fetch('/api/test-query', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: query, parameters: params })
+                    body: JSON.stringify({ query: query, parameters: params, database: database })
                 });
                 const data = await response.json();
                 

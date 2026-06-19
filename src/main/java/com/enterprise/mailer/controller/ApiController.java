@@ -22,16 +22,19 @@ public class ApiController {
     private final DynamicSchedulerService schedulerService;
     private final ReportExecutionService executionService;
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final com.enterprise.mailer.service.MultiDatabaseService multiDatabaseService;
     private final QueryValidator queryValidator;
     private final JsonParamParser paramParser;
 
     public ApiController(ReportConfigService configService, DynamicSchedulerService schedulerService,
                          ReportExecutionService executionService, NamedParameterJdbcTemplate jdbcTemplate,
+                         com.enterprise.mailer.service.MultiDatabaseService multiDatabaseService,
                          QueryValidator queryValidator, JsonParamParser paramParser) {
         this.configService = configService;
         this.schedulerService = schedulerService;
         this.executionService = executionService;
         this.jdbcTemplate = jdbcTemplate;
+        this.multiDatabaseService = multiDatabaseService;
         this.queryValidator = queryValidator;
         this.paramParser = paramParser;
     }
@@ -73,15 +76,25 @@ public class ApiController {
         try {
             String sql = payload.get("query");
             String paramsStr = payload.get("parameters");
+            String dbName = payload.get("database");
             
             queryValidator.validateQuery(sql);
             Map<String, Object> params = paramParser.parseParameters(paramsStr);
             
+            if (dbName == null || dbName.trim().isEmpty()) {
+                dbName = "default";
+            }
+            
+            NamedParameterJdbcTemplate targetTemplate = multiDatabaseService.getJdbcTemplate(dbName);
+            if (targetTemplate == null) {
+                throw new IllegalArgumentException("Database config '" + dbName + "' not found.");
+            }
+            
             // Limit to 100 rows for preview. Depending on dialect, we append limit.
             // A quick hack for H2/Oracle preview is just setting max rows in JdbcTemplate
-            jdbcTemplate.getJdbcTemplate().setMaxRows(100);
-            List<Map<String, Object>> result = jdbcTemplate.queryForList(sql, params);
-            jdbcTemplate.getJdbcTemplate().setMaxRows(-1); // reset
+            targetTemplate.getJdbcTemplate().setMaxRows(100);
+            List<Map<String, Object>> result = targetTemplate.queryForList(sql, params);
+            targetTemplate.getJdbcTemplate().setMaxRows(-1); // reset
             
             return ResponseEntity.ok(result);
         } catch (Exception e) {

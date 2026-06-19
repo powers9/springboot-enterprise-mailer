@@ -21,6 +21,7 @@ public class ReportConfig {
     private String subject;
     private String emailBodyTemplate;
     private String parameters; // JSON string
+    private String databaseName;
     private LocalDateTime lastRunTime;
     private String lastStatus;
     private LocalDateTime createdAt;

@@ -44,6 +44,16 @@
                     </div>
 
                     <div class="mb-3">
+                        <label class="form-label">Target Database</label>
+                        <select class="form-select" name="databaseName" required>
+                            <option th:each="dbName : ${availableDbs}" th:value="${dbName}" th:text="${dbName}"
+                                    th:selected="${config.databaseName == dbName || (config.databaseName == null && dbName == 'default')}">
+                                Database
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
                         <label class="form-label">SQL Query (Only SELECT allowed)</label>
                         <textarea class="form-control" name="querySql" th:text="${config.querySql}" rows="5" required></textarea>
                     </div>

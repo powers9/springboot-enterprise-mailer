@@ -16,6 +16,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
+                            <th>Database</th>
                             <th>Cron</th>
                             <th>Active</th>
                             <th>Formats</th>
@@ -28,6 +29,7 @@
                         <tr th:each="config : ${configs}">
                             <td th:text="${config.id}">1</td>
                             <td th:text="${config.reportName}">Report</td>
+                            <td th:text="${config.databaseName}">default</td>
                             <td th:text="${config.cronExpression}">0 0 * * * ?</td>
                             <td>
                                 <form th:action="@{/api/configs/toggle/{id}(id=${config.id})}" method="post" class="d-inline">
